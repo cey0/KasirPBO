@@ -98,19 +98,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtNama">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Nama"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtHarga">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Harga"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtStok">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Stok"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
