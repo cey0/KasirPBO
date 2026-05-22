@@ -44,8 +44,8 @@ public class FrameStokBarang extends javax.swing.JFrame {
             java.sql.ResultSet res=stm.executeQuery(sql);
             while(res.next())
             {
-                model.addRow(new Object[]{ res.getString(1), res.getString(2),
-                                           res.getString(3),res.getString(4)});
+                model.addRow(new Object[]{ res.getString("id"), res.getString("nama"),
+                                           res.getString("harga"),res.getString("stok")});
                                                
                 }
                 tblBarang.setModel (model);
@@ -94,10 +94,13 @@ public class FrameStokBarang extends javax.swing.JFrame {
         btnTambah.addActionListener(this::btnTambahActionPerformed);
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(this::btnEditActionPerformed);
 
         btnHapus.setText("Hapus");
+        btnHapus.addActionListener(this::btnHapusActionPerformed);
 
         btnClear.setText("Clear");
+        btnClear.addActionListener(this::btnClearActionPerformed);
 
         tblBarang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -116,6 +119,11 @@ public class FrameStokBarang extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblBarang.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblBarangMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tblBarang);
@@ -205,6 +213,65 @@ public class FrameStokBarang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void tblBarangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBarangMouseClicked
+        
+        //Untuk mengedit data pada tabel
+        int baris = tblBarang.rowAtPoint(evt.getPoint());
+        String nama = tblBarang.getValueAt(baris, 1).toString();
+        txtNama.setText(nama);
+        String harga = tblBarang.getValueAt(baris, 2).toString();
+        txtHarga.setText(harga);
+        String stok = tblBarang.getValueAt(baris, 3).toString();
+        txtStok.setText(stok);
+    }//GEN-LAST:event_tblBarangMouseClicked
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        try {
+            
+            int baris = tblBarang.getSelectedRow();
+            Connection conn = koneksi.getKoneksi();
+             String sql = "UPDATE Barang SET "
+                     + "nama = '" + txtNama.getText()+"', "
+                     + "harga = '" +  txtHarga.getText()+"', "
+                     + "stok = '" + txtStok.getText()+"' "
+                     + "WHERE id = '"+ tblBarang.getValueAt(baris, 0) +"' ";
+             
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.executeUpdate();
+             tampilData();
+             kosong();
+             
+             JOptionPane.showMessageDialog(null, "Data diedit");
+             
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        
+        try {
+            int baris = tblBarang.getSelectedRow();
+            Connection conn = koneksi.getKoneksi();
+            String sql = "delete from Barang where id='"+tblBarang.getValueAt(baris, 0) +"' ";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.execute();
+            JOptionPane.showMessageDialog(this, "Data di hapus");
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+        tampilData();
+        kosong();
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        kosong();
+    }//GEN-LAST:event_btnClearActionPerformed
 
     /**
      * @param args the command line arguments
