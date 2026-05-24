@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package kasir;
-import database.koneksi;
+import database.Koneksi;
 
 /**
  *
@@ -65,7 +65,7 @@ public class contoh extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        koneksi.getKoneksi();
+        Koneksi.getKoneksi();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new contoh().setVisible(true));
     }
