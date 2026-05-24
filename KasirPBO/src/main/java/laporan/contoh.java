@@ -4,6 +4,15 @@
  */
 package laporan;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.sql.*;
+import java.text.*;
+import java.util.Date;
+import database.koneksi;
 
 /**
  *
@@ -12,14 +21,37 @@ import com.toedter.calendar.JDateChooser;
 public class contoh extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(contoh.class.getName());
-
+    private Connection conn;
+    private DefaultTableModel tableModel;
     /**
      * Creates new form contoh
      */
     public contoh() {
         initComponents();
+        connectDatabase();
+        setupTable();
+    }
+    
+    private void connectDatabase() {
+        conn = koneksi.getKoneksi();
     }
 
+    private void setupTable() {
+        String[] kolom = {
+            "ID_Transaksi", "Tanggal", "Total", "Diskon",
+            "PPN", "Nama_Barang", "Harga_Barang", "Stok_Barang",
+            "Jumlah", "Sub_Total"
+        };
+        
+        tableModel = new DefaultTableModel(kolom, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
+         jScrollPane1.setViewportView(new JTable(tableModel));
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,6 +108,11 @@ public class contoh extends javax.swing.JFrame {
         jLabel3.setText("Total Transaksi      ");
 
         jButton3.setText("Export TXT");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Export PDF");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -162,7 +199,7 @@ public class contoh extends javax.swing.JFrame {
                     .addComponent(TotalPendapatan)
                     .addComponent(jLabel7))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
                 .addGap(64, 64, 64))
@@ -173,12 +210,208 @@ public class contoh extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        cariLaporan();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void cariLaporan() {
+        Date selectedDate = Tanggal.getDate();
+ 
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this,
+                "Pilih tanggal terlebih dahulu!",
+                "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggalCari = sdf.format(selectedDate);
+ 
+        tableModel.setRowCount(0);
+ 
+        String query = "SELECT " +
+            "t.id, " +
+            "t.tanggal, " +
+            "t.total, " +
+            "t.diskon, " +
+            "t.ppn, " +
+            "b.nama, " +
+            "b.harga, " +
+            "b.stok, " +
+            "dt.jumlah, " +
+            "dt.subtotal " +
+            "FROM transaksi t " +
+            "JOIN detail_transaksi dt ON t.id = dt.transaksi_id " +
+            "JOIN barang b ON dt.barang_id = b.id " +
+            "WHERE DATE(t.tanggal) = ? " +
+            "ORDER BY t.id";
+        
+         try {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, tanggalCari);
+            ResultSet rs = ps.executeQuery();
+ 
+            int totalTransaksi = 0;
+            double totalPendapatan = 0;
+            String lastIdTransaksi = "";
+ 
+            while (rs.next()) {
+                String idTransaksi = rs.getString("id");
+                String tanggal     = rs.getString("tanggal");
+                double total       = rs.getDouble("total");
+                double diskon      = rs.getDouble("diskon");
+                double ppn         = rs.getDouble("ppn");
+                String namaBarang  = rs.getString("nama");
+                double hargaBarang = rs.getDouble("harga");
+                int stokBarang     = rs.getInt("stok");
+                int jumlah         = rs.getInt("jumlah");
+                double subTotal    = rs.getDouble("subtotal");
+                
+                tableModel.addRow(new Object[]{
+                    idTransaksi, tanggal,
+                    formatRupiah(total), formatRupiah(diskon),
+                    formatRupiah(ppn), namaBarang,
+                    formatRupiah(hargaBarang), stokBarang,
+                    jumlah, formatRupiah(subTotal)
+                });
+                
+                if (!idTransaksi.equals(lastIdTransaksi)) {
+                    totalTransaksi++;
+                    totalPendapatan += total;
+                    lastIdTransaksi = idTransaksi;
+                }
+            }
+            
+            TotalTransaksi.setText(String.valueOf(totalTransaksi));
+            TotalPendapatan.setText(formatRupiah(totalPendapatan));
+            
+            if (totalTransaksi == 0) {
+                JOptionPane.showMessageDialog(this,
+                    "Tidak ada transaksi pada tanggal tersebut.",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+            } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error query: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+ 
+    private String formatRupiah(double angka) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance(
+            new java.util.Locale("id", "ID"));
+        return nf.format(angka);
+    }
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
+        exportPDF();
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void exportPDF() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data untuk diexport!");
+            return;
+        }
+ 
+        JFileChooser fc = new JFileChooser();
+        fc.setSelectedFile(new File("laporan_penjualan.pdf"));
+        int result = fc.showSaveDialog(this);
+ 
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                com.itextpdf.text.Document doc =
+                    new com.itextpdf.text.Document(
+                        com.itextpdf.text.PageSize.A4.rotate());
+ 
+                com.itextpdf.text.pdf.PdfWriter.getInstance(
+                    doc, new FileOutputStream(fc.getSelectedFile()));
+                doc.open();
+ 
+                com.itextpdf.text.Font titleFont =
+                    new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA,
+                        16, com.itextpdf.text.Font.BOLD);
+                doc.add(new com.itextpdf.text.Paragraph("LAPORAN PENJUALAN HARIAN", titleFont));
+                doc.add(new com.itextpdf.text.Paragraph(" "));
+ 
+                com.itextpdf.text.pdf.PdfPTable table =
+                    new com.itextpdf.text.pdf.PdfPTable(10);
+                table.setWidthPercentage(100);
+ 
+                String[] headers = {
+                    "ID_Transaksi", "Tanggal", "Total", "Diskon", "PPN",
+                    "Nama_Barang", "Harga_Barang", "Stok_Barang", "Jumlah", "Sub_Total"
+                };
+                for (String h : headers) {
+                    com.itextpdf.text.pdf.PdfPCell cell =
+                        new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(h));
+                    cell.setBackgroundColor(com.itextpdf.text.BaseColor.LIGHT_GRAY);
+                    table.addCell(cell);
+                }
+ 
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                        table.addCell(tableModel.getValueAt(i, j).toString());
+                    }
+                }
+ 
+                doc.add(table);
+                doc.add(new com.itextpdf.text.Paragraph(" "));
+                doc.add(new com.itextpdf.text.Paragraph("Total Transaksi  : " + TotalTransaksi.getText()));
+                doc.add(new com.itextpdf.text.Paragraph("Total Pendapatan : " + TotalPendapatan.getText()));
+                doc.close();
+ 
+                JOptionPane.showMessageDialog(this, "Export PDF berhasil!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal export PDF: " + e.getMessage());
+            }
+        }
+    }
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        exportTXT();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+     private void exportTXT() {
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data untuk diexport!");
+            return;
+        }
+ 
+        JFileChooser fc = new JFileChooser();
+        fc.setSelectedFile(new File("laporan_penjualan.txt"));
+        int result = fc.showSaveDialog(this);
+ 
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try (PrintWriter pw = new PrintWriter(new FileWriter(fc.getSelectedFile()))) {
+                pw.println("====================================");
+                pw.println("     LAPORAN PENJUALAN HARIAN");
+                pw.println("====================================");
+                pw.printf("%-15s %-20s %-15s %-15s %-15s %-15s %-15s %-12s %-8s %-15s%n",
+                    "ID_Transaksi", "Tanggal", "Total", "Diskon", "PPN",
+                    "Nama_Barang", "Harga_Barang", "Stok_Barang", "Jumlah", "Sub_Total");
+                pw.println("------------------------------------");
+ 
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    pw.printf("%-15s %-20s %-15s %-15s %-15s %-15s %-15s %-12s %-8s %-15s%n",
+                        tableModel.getValueAt(i, 0), tableModel.getValueAt(i, 1),
+                        tableModel.getValueAt(i, 2), tableModel.getValueAt(i, 3),
+                        tableModel.getValueAt(i, 4), tableModel.getValueAt(i, 5),
+                        tableModel.getValueAt(i, 6), tableModel.getValueAt(i, 7),
+                        tableModel.getValueAt(i, 8), tableModel.getValueAt(i, 9));
+                }
+ 
+                pw.println("====================================");
+                pw.println("Total Transaksi  : " + TotalTransaksi.getText());
+                pw.println("Total Pendapatan : " + TotalPendapatan.getText());
+ 
+                JOptionPane.showMessageDialog(this, "Export TXT berhasil!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Gagal export: " + e.getMessage());
+            }
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -199,7 +432,16 @@ public class contoh extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new contoh().setVisible(true));
     }

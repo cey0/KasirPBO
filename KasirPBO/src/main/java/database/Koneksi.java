@@ -13,7 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class koneksi {
+public class Koneksi {
     private static Connection koneksi;
     
     public static Connection getKoneksi() {
@@ -39,7 +39,23 @@ public class koneksi {
     private static void buatTabelOtomatis() {
         try {
             Statement stmt = koneksi.createStatement();
-            
+            // 0. Bikin Tabel Users
+            String tabelUsers = "CREATE TABLE IF NOT EXISTS users ("
+            + "id INT AUTO_INCREMENT PRIMARY KEY, "
+            + "username VARCHAR(50) UNIQUE NOT NULL, "
+            + "password VARCHAR(255) NOT NULL, "
+            + "nama_lengkap VARCHAR(100) NOT NULL, "
+            + "role ENUM('admin', 'kasir') NOT NULL)";
+            stmt.execute(tabelUsers);
+
+            // Opsional: Cek apakah tabel users kosong. Kalau kosong, bikin 1 admin default.
+            String cekUser = "SELECT COUNT(*) AS total FROM users";
+            java.sql.ResultSet rs = stmt.executeQuery(cekUser);
+            if (rs.next() && rs.getInt("total") == 0) {
+            String insertAdmin = "INSERT INTO users (username, password, nama_lengkap, role) "
+            + "VALUES ('admin', 'admin123', 'Administrator Utama', 'admin')";
+            stmt.execute(insertAdmin);
+                }
             // 1. Bikin Tabel Barang
             String tabelBarang = "CREATE TABLE IF NOT EXISTS barang ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY, "
