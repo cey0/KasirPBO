@@ -12,7 +12,7 @@ import java.io.*;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
-import database.koneksi;
+import database.Koneksi;
 
 /**
  *
@@ -33,7 +33,7 @@ public class contoh extends javax.swing.JFrame {
     }
     
     private void connectDatabase() {
-        conn = koneksi.getKoneksi();
+        conn = Koneksi.getKoneksi();
     }
 
     private void setupTable() {
