@@ -13,11 +13,6 @@ import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import database.Koneksi;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import javax.swing.BorderFactory;
 
 /**
  *
