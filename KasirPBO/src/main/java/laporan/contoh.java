@@ -30,7 +30,92 @@ public class contoh extends javax.swing.JFrame {
         initComponents();
         connectDatabase();
         setupTable();
+        styleUI();
     }
+    
+    private void styleUI() {
+    // Background abu-abu muda seperti punya teman
+    getContentPane().setBackground(new Color(0xF0F4F8));
+
+    // Judul biru bold
+    jLabel1.setOpaque(true);
+    jLabel1.setBackground(new Color(0x0379C7));
+    jLabel1.setForeground(Color.WHITE);
+    jLabel1.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+
+    // Label warna biru gelap
+    jLabel2.setForeground(new Color(0x2A6D99));
+    jLabel2.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jLabel3.setForeground(new Color(0x2A6D99));
+    jLabel3.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jLabel4.setForeground(new Color(0x2A6D99));
+    jLabel4.setFont(new Font("Segoe UI", Font.BOLD, 16));
+    jLabel5.setForeground(new Color(0x2A6D99));
+    jLabel5.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jLabel6.setForeground(new Color(0x2A6D99));
+    jLabel7.setForeground(new Color(0x2A6D99));
+    TotalTransaksi.setForeground(new Color(0x0379C7));
+    TotalTransaksi.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    TotalPendapatan.setForeground(new Color(0x0379C7));
+    TotalPendapatan.setFont(new Font("Segoe UI", Font.BOLD, 13));
+
+    // Tombol Cari
+    jButton1.setBackground(new Color(0x0379C7));
+    jButton1.setForeground(Color.WHITE);
+    jButton1.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jButton1.setFocusPainted(false);
+    jButton1.setBorderPainted(false);
+    jButton1.setOpaque(true);
+    jButton1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+    // Tombol Export TXT
+    jButton3.setBackground(new Color(0x0379C7));
+    jButton3.setForeground(Color.WHITE);
+    jButton3.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jButton3.setFocusPainted(false);
+    jButton3.setBorderPainted(false);
+    jButton3.setOpaque(true);
+    jButton3.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+    // Tombol Export PDF
+    jButton4.setBackground(new Color(0x0379C7));
+    jButton4.setForeground(Color.WHITE);
+    jButton4.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    jButton4.setFocusPainted(false);
+    jButton4.setBorderPainted(false);
+    jButton4.setOpaque(true);
+    jButton4.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+    // Tabel
+    TabelTransaksi.setBackground(Color.WHITE);
+    TabelTransaksi.setGridColor(new Color(0xB9F0F9));
+    TabelTransaksi.setRowHeight(28);
+    TabelTransaksi.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    TabelTransaksi.setSelectionBackground(new Color(0xB9F0F9));
+    TabelTransaksi.setSelectionForeground(new Color(0x0379C7));
+
+    // Header tabel biru solid seperti punya teman
+    TabelTransaksi.getTableHeader().setBackground(new Color(0x0379C7));
+    TabelTransaksi.getTableHeader().setForeground(Color.WHITE);
+    TabelTransaksi.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+    TabelTransaksi.getTableHeader().setPreferredSize(new Dimension(0, 32));
+
+    // Border scroll panel
+    jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(0x78AEC6), 1));
+    jScrollPane1.getViewport().setBackground(Color.WHITE);
+    
+    // Atur lebar kolom
+    TabelTransaksi.getColumnModel().getColumn(0).setPreferredWidth(100); // ID_Transaksi
+    TabelTransaksi.getColumnModel().getColumn(1).setPreferredWidth(140); // Tanggal
+    TabelTransaksi.getColumnModel().getColumn(2).setPreferredWidth(120); // Total
+    TabelTransaksi.getColumnModel().getColumn(3).setPreferredWidth(100); // Diskon
+    TabelTransaksi.getColumnModel().getColumn(4).setPreferredWidth(100); // PPN
+    TabelTransaksi.getColumnModel().getColumn(5).setPreferredWidth(180); // Nama_Barang
+    TabelTransaksi.getColumnModel().getColumn(6).setPreferredWidth(120); // Harga_Barang
+    TabelTransaksi.getColumnModel().getColumn(7).setPreferredWidth(90);  // Stok_Barang
+    TabelTransaksi.getColumnModel().getColumn(8).setPreferredWidth(70);  // Jumlah
+    TabelTransaksi.getColumnModel().getColumn(9).setPreferredWidth(120); // Sub_Total
+}
     
     private void connectDatabase() {
         conn = Koneksi.getKoneksi();
@@ -139,52 +224,61 @@ public class contoh extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(232, 232, 232)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(0, 123, Short.MAX_VALUE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(TotalTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 722, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(TotalPendapatan, javax.swing.GroupLayout.PREFERRED_SIZE, 722, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(21, 21, 21))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(Tanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TotalPendapatan, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TotalTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 853, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(153, 153, 153))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(287, 287, 287)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(25, 25, 25)
                 .addComponent(jLabel1)
-                .addGap(55, 55, 55)
+                .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Tanggal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
@@ -199,7 +293,7 @@ public class contoh extends javax.swing.JFrame {
                     .addComponent(TotalPendapatan)
                     .addComponent(jLabel7))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
                 .addGap(64, 64, 64))
