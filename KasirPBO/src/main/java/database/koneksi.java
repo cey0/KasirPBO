@@ -13,7 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Koneksi {
+public class koneksi {
     private static Connection koneksi;
     
     public static Connection getKoneksi() {
@@ -45,7 +45,7 @@ public class Koneksi {
             + "username VARCHAR(50) UNIQUE NOT NULL, "
             + "password VARCHAR(255) NOT NULL, "
             + "nama_lengkap VARCHAR(100) NOT NULL, "
-            + "role ENUM('admin', 'kasir') NOT NULL)";
+            + "role ENUM('admin', 'kasir','inventory','manajer') NOT NULL)";
             stmt.execute(tabelUsers);
 
             // Opsional: Cek apakah tabel users kosong. Kalau kosong, bikin 1 admin default.

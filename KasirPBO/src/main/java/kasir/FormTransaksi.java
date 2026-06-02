@@ -1,6 +1,6 @@
 package kasir;
 
-import database.Koneksi;
+import database.koneksi;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,7 +25,7 @@ public class FormTransaksi extends javax.swing.JFrame {
 
     private void loadBarang() {
         try {
-            Connection c = Koneksi.getKoneksi();
+            Connection c = koneksi.getKoneksi();
 
             String sql = "SELECT * FROM barang";
 
@@ -368,7 +368,7 @@ public class FormTransaksi extends javax.swing.JFrame {
             // ambil koneksi
 
             Connection conn =
-                Koneksi.getKoneksi();
+                koneksi.getKoneksi();
 
             // TODO:
             // hitung total

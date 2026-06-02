@@ -142,7 +142,7 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         try {
-    java.sql.Connection conn = Koneksi.getKoneksi();
+    java.sql.Connection conn = koneksi.getKoneksi();
     String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
     java.sql.PreparedStatement pst = conn.prepareStatement(sql);
     

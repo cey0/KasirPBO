@@ -8,7 +8,7 @@ package manajemenbarang;
  *
  * @author Farhan Fauzi
  */
-import database.Koneksi;
+import database.koneksi;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
@@ -44,7 +44,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
         try 
         {
             String sql = "select * from Barang ";
-            java.sql.Connection conn=(Connection)Koneksi.getKoneksi();
+            java.sql.Connection conn=(Connection)koneksi.getKoneksi();
             java.sql.Statement stm=conn.createStatement();
             java.sql.ResultSet res=stm.executeQuery(sql);
             while(res.next())
@@ -269,7 +269,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
 
         try {
             int baris = tblBarang.getSelectedRow();
-            Connection conn = Koneksi.getKoneksi();
+            Connection conn = koneksi.getKoneksi();
             String sql = "delete from Barang where id='"+tblBarang.getValueAt(baris, 0) +"' ";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.execute();
@@ -286,7 +286,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
         try {
 
             int baris = tblBarang.getSelectedRow();
-            Connection conn = Koneksi.getKoneksi();
+            Connection conn = koneksi.getKoneksi();
             String sql = "UPDATE Barang SET "
             + "nama = '" + txtNama.getText()+"', "
             + "harga = '" +  txtHarga.getText()+"', "
@@ -326,7 +326,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         // TODO add your handling code here:
         try {
-            Connection conn = Koneksi.getKoneksi();
+            Connection conn = koneksi.getKoneksi();
             String sql = "INSERT INTO barang(nama, harga, stok) VALUES (?, ?, ?)";
 
             PreparedStatement pst = conn.prepareStatement(sql);
