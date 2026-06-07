@@ -4,12 +4,19 @@
  */
 package database;
 
+import javax.swing.JOptionPane;
+import laporan.contoh;
+import manajemenbarang.FrameStokBarang;
+import kasir.FormTransaksi;
+import static database.Koneksi.getKoneksi;
+
+
 /**
  *
  * @author jeffri
  */
 public class Login extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
 
     /**
@@ -17,6 +24,7 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
+        getKoneksi();
     }
 
     /**
@@ -142,30 +150,54 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         try {
-    java.sql.Connection conn = Koneksi.getKoneksi();
-    String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-    java.sql.PreparedStatement pst = conn.prepareStatement(sql);
-    
-    pst.setString(1, txtUsername.getText());
-    // Ambil password dari JPasswordField
-    pst.setString(2, new String(txtPassword.getPassword())); 
-    
-    java.sql.ResultSet rs = pst.executeQuery();
-    
-    if (rs.next()) {
-        String role = rs.getString("role");
-        String nama = rs.getString("nama_lengkap");
-        javax.swing.JOptionPane.showMessageDialog(this, "Berhasil Login! Selamat datang " + nama);
-        
-        // Di sini lo panggil JFrame menu utama.
-        // Contoh: new MenuUtama(role).setVisible(true);
-        // this.dispose(); // Nutup window Login
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Username atau Password salah!");
-    }
-} catch (Exception e) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-}
+            java.sql.Connection conn = Koneksi.getKoneksi();
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+
+            pst.setString(1, txtUsername.getText());
+            // Ambil password dari JPasswordField
+            pst.setString(2, new String(txtPassword.getPassword()));
+
+            java.sql.ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("role");
+                String nama = rs.getString("nama_lengkap");
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Berhasil Login! Selamat datang " + nama
+                );
+
+                if (role.equalsIgnoreCase("admin")) {
+
+                    new contoh().setVisible(true);
+
+                } else if (role.equalsIgnoreCase("manajer")) {
+
+                    new FrameStokBarang().setVisible(true);
+
+                } else if (role.equalsIgnoreCase("kasir")) {
+
+                    new FormTransaksi().setVisible(true);
+
+                } else {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Role tidak dikenali!"
+                    );
+
+                    return;
+                }
+
+                this.dispose();
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Username atau Password salah!");
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
@@ -176,18 +208,18 @@ public class Login extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    try {
-        // Pasang tema FlatLaf Light modern
-        javax.swing.UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
-    } catch (Exception ex) {
-        System.err.println("Gagal memuat tema FlatLaf: " + ex.getMessage());
-    }
+        try {
+            // Pasang tema FlatLaf Light modern
+            javax.swing.UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Gagal memuat tema FlatLaf: " + ex.getMessage());
+        }
 
-    // Kode bawaan buat nampilin JFrame Login lo (pake sintaks lambda biar ringkas)
-    java.awt.EventQueue.invokeLater(() -> {
-        new Login().setVisible(true);
-    });
-}
+        // Kode bawaan buat nampilin JFrame Login lo (pake sintaks lambda biar ringkas)
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogin;

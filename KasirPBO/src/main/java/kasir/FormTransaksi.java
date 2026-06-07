@@ -1,11 +1,19 @@
 package kasir;
 
 import database.Koneksi;
+import static database.Koneksi.getKoneksi;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -16,18 +24,28 @@ public class FormTransaksi extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormTransaksi.class.getName());
 
+    private javax.swing.ImageIcon loadIcon(String path) {
+        java.net.URL url = getClass().getResource(path);
+        if (url == null) {
+            return new javax.swing.ImageIcon(); // icon kosong kalau tidak ditemukan
+        }
+        return new javax.swing.ImageIcon(url);
+    }
+
     /**
      * Creates new form FormTransaksi
      */
     public FormTransaksi() {
         initComponents();
+        getKoneksi();
+        loadBarang();
     }
 
     private void loadBarang() {
         try {
             Connection c = Koneksi.getKoneksi();
 
-            String sql = "SELECT * FROM barang";
+            String sql = "SELECT * FROM barang WHERE status='aktif'";
 
             PreparedStatement ps = c.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -46,18 +64,50 @@ public class FormTransaksi extends javax.swing.JFrame {
 
     private void hitungTotal() {
         DefaultTableModel m = (DefaultTableModel) tblKeranjang.getModel();
-        double total = 0;
+        DecimalFormat df = new DecimalFormat("#,##0");
+
+        double subtotal = 0;
         int jumlah = 0;
 
         for (int i = 0; i < m.getRowCount(); i++) {
-            double sub = Double.parseDouble(m.getValueAt(i, 4).toString());
-            int qty = Integer.parseInt(m.getValueAt(i, 2).toString());
-            total += sub;
+
+            // kolom 4 = Subtotal
+            double sub = Double.parseDouble(
+                    m.getValueAt(i, 4).toString()
+            );
+
+            // kolom 2 = Quantity
+            int qty = Integer.parseInt(
+                    m.getValueAt(i, 2).toString()
+            );
+
+            subtotal += sub;
             jumlah += qty;
         }
+
+        // Hitung diskon: 10% jika subtotal >= 500.000 atau jumlah item >= 50
+        double diskon = 0;
+        if (subtotal >= 500000 || jumlah >= 50) {
+            diskon = subtotal * 0.10;
+        }
+
+        // Hitung PPN 11% dari subtotal setelah diskon
+        double setelahDiskon = subtotal - diskon;
+        double ppn = setelahDiskon * 0.11;
+
+        // Total akhir = subtotal - diskon + ppn
+        double totalAkhir = setelahDiskon + ppn;
+
         txtJumlah.setText(String.valueOf(jumlah));
-        txtTotal.setText(String.valueOf(total));
-        
+        txtTotal.setText(String.valueOf(totalAkhir));
+
+        // Update label PPN dan Diskon
+        jLabel2.setText("PPN (11%) : Rp. " + df.format(ppn));
+        if (diskon > 0) {
+            jLabel10.setText("Diskon (10%) : Rp. " + df.format(diskon));
+        } else {
+            jLabel10.setText("Diskon : -");
+        }
     }
 
     /**
@@ -76,8 +126,6 @@ public class FormTransaksi extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -130,16 +178,6 @@ public class FormTransaksi extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assetsimg/shoppingCart.png"))); // NOI18N
         jLabel7.setText("Keranjang Belanja");
-
-        jButton4.setBackground(new java.awt.Color(3, 121, 199));
-        jButton4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Laporan");
-        jButton4.addActionListener(this::jButton4ActionPerformed);
-
-        jButton5.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        jButton5.setText("Manajemen Barang");
-        jButton5.addActionListener(this::jButton5ActionPerformed);
 
         jPanel1.setBackground(new java.awt.Color(3, 121, 199));
 
@@ -241,12 +279,13 @@ public class FormTransaksi extends javax.swing.JFrame {
                         .addComponent(jLabel8)
                         .addComponent(jLabel9)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(CmbBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(SpinBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnTambah)
-                    .addComponent(txtCariBarang))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCariBarang)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton3)
+                        .addComponent(CmbBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SpinBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnTambah)))
                 .addGap(14, 14, 14))
         );
 
@@ -256,13 +295,10 @@ public class FormTransaksi extends javax.swing.JFrame {
         tblKeranjang.setBackground(new java.awt.Color(241, 247, 249));
         tblKeranjang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Nama Barang", "Quantity", "Harga", "Subtotal"
+                "ID", "Nama Barang", "Quantity", "Harga", "Subtotal"
             }
         ));
         jScrollPane2.setViewportView(tblKeranjang);
@@ -306,14 +342,9 @@ public class FormTransaksi extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addGap(271, 271, 271)
-                            .addComponent(jLabel7))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jButton4)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton5)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(271, 271, 271)
+                        .addComponent(jLabel7))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jButton1)
@@ -341,11 +372,7 @@ public class FormTransaksi extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jButton4))
-                .addGap(7, 7, 7)
+                .addGap(42, 42, 42)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -388,12 +415,38 @@ public class FormTransaksi extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "stok tidak cukup");
             return;
         }
-        double subtotal = b.getHarga() * qty;
+
         DefaultTableModel m = (DefaultTableModel) tblKeranjang.getModel();
 
-        m.addRow(new Object[]{
-            b.getId(), b.getNama(), qty, b.getHarga(), subtotal
-        });
+        // Check if barang already exists in the cart by ID
+        boolean found = false;
+        for (int i = 0; i < m.getRowCount(); i++) {
+            int existingId = Integer.parseInt(m.getValueAt(i, 0).toString());
+            if (existingId == b.getId()) {
+                // Combine qty
+                int existingQty = Integer.parseInt(m.getValueAt(i, 2).toString());
+                int newQty = existingQty + qty;
+
+                // Check if combined qty exceeds stock
+                if (newQty > b.getstok()) {
+                    JOptionPane.showMessageDialog(this, "stok tidak cukup (total di keranjang: " + existingQty + " + " + qty + " = " + newQty + ")");
+                    return;
+                }
+
+                double newSubtotal = b.getHarga() * newQty;
+                m.setValueAt(newQty, i, 2);
+                m.setValueAt(newSubtotal, i, 4);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            double subtotal = b.getHarga() * qty;
+            m.addRow(new Object[]{
+                b.getId(), b.getNama(), qty, b.getHarga(), subtotal
+            });
+        }
 
         hitungTotal();
 
@@ -402,35 +455,6 @@ public class FormTransaksi extends javax.swing.JFrame {
     private void txtJumlahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJumlahActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtJumlahActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         int row =
-            tblKeranjang.getSelectedRow();
-
-    
-
-        if (row == -1) {
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Pilih item dulu"
-            );
-
-            return;
-        }
-
-
-
-        DefaultTableModel model =
-            (DefaultTableModel) tblKeranjang.getModel();
-
-     
-
-        model.removeRow(row);
-
-
-        hitungTotal();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void txtTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalActionPerformed
         // TODO add your handling code here:
@@ -448,17 +472,9 @@ public class FormTransaksi extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_CmbBarangActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
     private void txtCariBarangFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCariBarangFocusGained
         // TODO add your handling code here:
-         if (txtCariBarang.getText().equals("ID/Nama Barang")) {
+        if (txtCariBarang.getText().equals("ID/Nama Barang")) {
 
             txtCariBarang.setText("");
         }
@@ -466,7 +482,7 @@ public class FormTransaksi extends javax.swing.JFrame {
 
     private void txtCariBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCariBarangFocusLost
         // TODO add your handling code here:
-         if (txtCariBarang.getText().isEmpty()) {
+        if (txtCariBarang.getText().isEmpty()) {
 
             txtCariBarang.setText("ID/Nama Barang");
         }
@@ -478,35 +494,45 @@ public class FormTransaksi extends javax.swing.JFrame {
 
             // TODO:
             // ambil koneksi
+            Connection conn
+                    = Koneksi.getKoneksi();
 
-            Connection conn =
-                Koneksi.getKoneksi();
+            // hitung subtotal dan jumlah dari keranjang
+            DefaultTableModel modelKeranjang
+                    = (DefaultTableModel) tblKeranjang.getModel();
 
-            // TODO:
-            // hitung total
+            double subtotal = 0;
+            int totalJumlah = 0;
+            for (int i = 0; i < modelKeranjang.getRowCount(); i++) {
+                subtotal += Double.parseDouble(
+                        modelKeranjang.getValueAt(i, 4).toString());
+                totalJumlah += Integer.parseInt(
+                        modelKeranjang.getValueAt(i, 2).toString());
+            }
 
-            double total =
-                Double.parseDouble(
-                    txtTotal.getText()
-                );
+            // hitung diskon: 10% jika subtotal >= 500.000 atau jumlah >= 50
+            double diskon = 0;
+            if (subtotal >= 500000 || totalJumlah >= 50) {
+                diskon = subtotal * 0.10;
+            }
 
-            // TODO:
-            // ppn sementara 0
+            // hitung PPN 11% dari subtotal setelah diskon
+            double setelahDiskon = subtotal - diskon;
+            double ppn = setelahDiskon * 0.11;
 
-            double ppn = 0;
+            // total akhir
+            double total = setelahDiskon + ppn;
 
-            // TODO:
             // insert transaksi
+            String sqlTransaksi
+                    = "INSERT INTO transaksi(total, ppn) "
+                    + "VALUES (?, ?)";
 
-            String sqlTransaksi =
-                "INSERT INTO transaksi(total, ppn) "
-                + "VALUES (?, ?)";
-
-            PreparedStatement psTransaksi =
-                conn.prepareStatement(
-                    sqlTransaksi,
-                    Statement.RETURN_GENERATED_KEYS
-                );
+            PreparedStatement psTransaksi
+                    = conn.prepareStatement(
+                            sqlTransaksi,
+                            Statement.RETURN_GENERATED_KEYS
+                    );
 
             psTransaksi.setDouble(1, total);
             psTransaksi.setDouble(2, ppn);
@@ -515,73 +541,68 @@ public class FormTransaksi extends javax.swing.JFrame {
 
             // TODO:
             // ambil id transaksi
-
-            ResultSet generatedKeys =
-                psTransaksi.getGeneratedKeys();
+            ResultSet generatedKeys
+                    = psTransaksi.getGeneratedKeys();
 
             int transaksiId = 0;
 
             if (generatedKeys.next()) {
-                transaksiId =
-                    generatedKeys.getInt(1);
+                transaksiId
+                        = generatedKeys.getInt(1);
             }
 
             // TODO:
             // ambil model table
-
-            DefaultTableModel model =
-                (DefaultTableModel) tblKeranjang.getModel();
+            DefaultTableModel model
+                    = (DefaultTableModel) tblKeranjang.getModel();
 
             // TODO:
             // looping semua item
-
             for (int i = 0; i < model.getRowCount(); i++) {
 
-                int barangId =
-                    Integer.parseInt(
-                        model.getValueAt(i, 0).toString()
-                    );
+                int barangId
+                        = Integer.parseInt(
+                                model.getValueAt(i, 0).toString()
+                        );
 
-                int qty =
-                    Integer.parseInt(
-                        model.getValueAt(i, 2).toString()
-                    );
+                int qty
+                        = Integer.parseInt(
+                                model.getValueAt(i, 2).toString()
+                        );
 
-                double subtotal =
-                    Double.parseDouble(
-                        model.getValueAt(i, 4).toString()
-                    );
+                double subItem
+                        = Double.parseDouble(
+                                model.getValueAt(i, 4).toString()
+                        );
 
                 // =========================================
                 // INSERT DETAIL TRANSAKSI
                 // =========================================
+                String sqlDetail
+                        = "INSERT INTO detail_transaksi "
+                        + "(transaksi_id, barang_id, jumlah, subtotal) "
+                        + "VALUES (?, ?, ?, ?)";
 
-                String sqlDetail =
-                    "INSERT INTO detail_transaksi "
-                    + "(transaksi_id, barang_id, jumlah, subtotal) "
-                    + "VALUES (?, ?, ?, ?)";
-
-                PreparedStatement psDetail =
-                    conn.prepareStatement(sqlDetail);
+                PreparedStatement psDetail
+                        = conn.prepareStatement(sqlDetail);
 
                 psDetail.setInt(1, transaksiId);
                 psDetail.setInt(2, barangId);
                 psDetail.setInt(3, qty);
-                psDetail.setDouble(4, subtotal);
+                psDetail.setDouble(4, subItem);
 
                 psDetail.executeUpdate();
 
                 // =========================================
                 // UPDATE STOK
                 // =========================================
+                String sqlUpdateStok
+                        = "UPDATE barang "
+                        + "SET stok = stok - ? "
+                        + "WHERE id = ?";
 
-                String sqlUpdateStok =
-                    "UPDATE barang "
-                    + "SET stok = stok - ? "
-                    + "WHERE id = ?";
-
-                PreparedStatement psUpdate =
-                    conn.prepareStatement(sqlUpdateStok);
+                PreparedStatement psUpdate
+                        = conn.prepareStatement(sqlUpdateStok);
 
                 psUpdate.setInt(1, qty);
                 psUpdate.setInt(2, barangId);
@@ -589,38 +610,114 @@ public class FormTransaksi extends javax.swing.JFrame {
                 psUpdate.executeUpdate();
             }
 
+            // =========================================
+            // PRINT STRUK
+            // =========================================
+            printStruk(transaksiId, model, subtotal, diskon, ppn, total);
+
             // TODO:
             // notif sukses
-
             JOptionPane.showMessageDialog(
-                this,
-                "Checkout berhasil!"
+                    this,
+                    "Checkout berhasil!"
             );
 
             // TODO:
             // kosongin table
-
             model.setRowCount(0);
 
-            // TODO:
             // reset total
-
             txtJumlah.setText("0");
             txtTotal.setText("0");
+            jLabel2.setText("PPN");
+            jLabel10.setText("Diskon");
 
             // TODO:
             // reload barang biar stok update
-
             loadBarang();
 
         } catch (Exception e) {
 
             JOptionPane.showMessageDialog(
-                this,
-                e.getMessage()
+                    this,
+                    e.getMessage()
             );
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void printStruk(int transaksiId, DefaultTableModel model, double subtotal, double diskon, double ppn, double total) {
+        DecimalFormat df = new DecimalFormat("#,##0");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("====================================\n");
+        sb.append("         KASIR PBO STORE\n");
+        sb.append("====================================\n");
+        sb.append("Tanggal      : ").append(sdf.format(new Date())).append("\n");
+        sb.append("No. Transaksi: ").append(transaksiId).append("\n");
+        sb.append("------------------------------------\n");
+        sb.append(String.format("%-18s %4s %12s\n", "Barang", "Qty", "Subtotal"));
+        sb.append("------------------------------------\n");
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String nama = model.getValueAt(i, 1).toString();
+            String qty = model.getValueAt(i, 2).toString();
+            double harga = Double.parseDouble(model.getValueAt(i, 3).toString());
+            double sub = Double.parseDouble(model.getValueAt(i, 4).toString());
+
+            sb.append(String.format("%-18s\n", nama));
+            sb.append(String.format("  %s x Rp.%-8s Rp.%s\n", qty, df.format(harga), df.format(sub)));
+        }
+
+        sb.append("------------------------------------\n");
+        sb.append(String.format("SUBTOTAL   : Rp.%s\n", df.format(subtotal)));
+        if (diskon > 0) {
+            sb.append(String.format("DISKON 10%%: -Rp.%s\n", df.format(diskon)));
+        }
+        sb.append(String.format("PPN 11%%   : Rp.%s\n", df.format(ppn)));
+        sb.append("------------------------------------\n");
+        sb.append(String.format("TOTAL      : Rp.%s\n", df.format(total)));
+        sb.append("====================================\n");
+        sb.append("        Terima Kasih!\n");
+        sb.append("     Selamat Berbelanja!\n");
+
+        // Show struk in a dialog
+        JTextArea textArea = new JTextArea(sb.toString());
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        textArea.setEditable(false);
+        textArea.setBackground(new java.awt.Color(255, 255, 255));
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new java.awt.Dimension(420, 400));
+
+        JDialog dialog = new JDialog(this, "Struk Belanja", true);
+        dialog.getContentPane().add(scrollPane);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int row
+                = tblKeranjang.getSelectedRow();
+
+        if (row == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Pilih item dulu"
+            );
+
+            return;
+        }
+
+        DefaultTableModel model
+                = (DefaultTableModel) tblKeranjang.getModel();
+
+        model.removeRow(row);
+
+        hitungTotal();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -654,8 +751,6 @@ public class FormTransaksi extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

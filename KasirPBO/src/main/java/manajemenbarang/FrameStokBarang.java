@@ -41,6 +41,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
         model.addColumn ("Nama");
         model.addColumn ("Harga");
         model.addColumn ("Stok");
+        model.addColumn ("Status");
         
         try 
         {
@@ -51,7 +52,8 @@ public class FrameStokBarang extends javax.swing.JFrame {
             while(res.next())
             {
                 model.addRow(new Object[]{ res.getString("id"), res.getString("nama"),
-                                           res.getString("harga"),res.getString("stok")});
+                                           res.getString("harga"),res.getString("stok"),
+                                           res.getString("status")});
                                                
                 }
                 tblBarang.setModel (model);
@@ -67,7 +69,9 @@ public class FrameStokBarang extends javax.swing.JFrame {
         txtNama.setText(null);
         txtHarga.setText(null);
         txtStok.setText(null);
-        
+        // Reset button hapus ke default
+        btnHapus.setBackground(new java.awt.Color(255, 0, 0));
+        btnHapus.setText("❌Hapus");
     }
     
     @SuppressWarnings("unchecked")
@@ -167,17 +171,17 @@ public class FrameStokBarang extends javax.swing.JFrame {
         tblBarang.setBackground(new java.awt.Color(250, 252, 251));
         tblBarang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nama ", "Harga", "Stok"
+                "ID", "Nama ", "Harga", "Stok", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -351,11 +355,28 @@ public class FrameStokBarang extends javax.swing.JFrame {
 
         try {
             int baris = tblBarang.getSelectedRow();
+            if (baris == -1) {
+                JOptionPane.showMessageDialog(this, "Pilih barang dulu");
+                return;
+            }
+
+            String statusSekarang = tblBarang.getValueAt(baris, 4).toString();
+            String statusBaru;
+            String pesan;
+
+            if ("aktif".equals(statusSekarang)) {
+                statusBaru = "nonaktif";
+                pesan = "Barang dinonaktifkan";
+            } else {
+                statusBaru = "aktif";
+                pesan = "Barang diaktifkan kembali";
+            }
+
             Connection conn = Koneksi.getKoneksi();
-            String sql = "delete from Barang where id='"+tblBarang.getValueAt(baris, 0) +"' ";
+            String sql = "UPDATE Barang SET status='" + statusBaru + "' WHERE id='" + tblBarang.getValueAt(baris, 0) + "' ";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.execute();
-            JOptionPane.showMessageDialog(this, "Data di hapus");
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, pesan);
         }catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -420,6 +441,16 @@ public class FrameStokBarang extends javax.swing.JFrame {
         txtHarga.setText(harga);
         String stok = tblBarang.getValueAt(baris, 3).toString();
         txtStok.setText(stok);
+
+        // Ubah tampilan button berdasarkan status
+        String status = tblBarang.getValueAt(baris, 4).toString();
+        if ("nonaktif".equals(status)) {
+            btnHapus.setBackground(new java.awt.Color(3, 121, 199));
+            btnHapus.setText("\uD83D\uDD04 Re Active");
+        } else {
+            btnHapus.setBackground(new java.awt.Color(255, 0, 0));
+            btnHapus.setText("❌Hapus");
+        }
     }//GEN-LAST:event_tblBarangMouseClicked
 
     /**
