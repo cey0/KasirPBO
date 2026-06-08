@@ -9,6 +9,7 @@ package manajemenbarang;
  * @author Farhan Fauzi
  */
 import database.Koneksi;
+import database.Login;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
@@ -16,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.ImageIcon;
 
 public class FrameStokBarang extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrameStokBarang.class.getName());
 
     /**
@@ -24,48 +25,44 @@ public class FrameStokBarang extends javax.swing.JFrame {
      */
     public FrameStokBarang() {
         initComponents();
-     jLabel8.setIcon(new ImageIcon(
-    "src/main/java/manajemenbarang/icon50.png"
-    ));
+        jLabel8.setIcon(new ImageIcon(
+                "src/main/java/manajemenbarang/icon50.png"
+        ));
 
         tampilData();
         kosong();
-       
-    }   
-    
+
+    }
+
     public void tampilData() {
-        
+
         //membuat tampilan model tabel
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn ("ID");
-        model.addColumn ("Nama");
-        model.addColumn ("Harga");
-        model.addColumn ("Stok");
-        model.addColumn ("Status");
-        
-        try 
-        {
-            String sql = "select * from Barang ";
-            java.sql.Connection conn=(Connection)Koneksi.getKoneksi();
-            java.sql.Statement stm=conn.createStatement();
-            java.sql.ResultSet res=stm.executeQuery(sql);
-            while(res.next())
-            {
-                model.addRow(new Object[]{ res.getString("id"), res.getString("nama"),
-                                           res.getString("harga"),res.getString("stok"),
-                                           res.getString("status")});
-                                               
-                }
-                tblBarang.setModel (model);
-            }
-            catch (Exception e)
-            {
-                
-            }
+        model.addColumn("ID");
+        model.addColumn("Nama");
+        model.addColumn("Harga");
+        model.addColumn("Stok");
+        model.addColumn("Status");
 
-}
-    
-    private void kosong(){
+        try {
+            String sql = "select * from Barang ";
+            java.sql.Connection conn = (Connection) Koneksi.getKoneksi();
+            java.sql.Statement stm = conn.createStatement();
+            java.sql.ResultSet res = stm.executeQuery(sql);
+            while (res.next()) {
+                model.addRow(new Object[]{res.getString("id"), res.getString("nama"),
+                    res.getString("harga"), res.getString("stok"),
+                    res.getString("status")});
+
+            }
+            tblBarang.setModel(model);
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private void kosong() {
         txtNama.setText(null);
         txtHarga.setText(null);
         txtStok.setText(null);
@@ -73,7 +70,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
         btnHapus.setBackground(new java.awt.Color(255, 0, 0));
         btnHapus.setText("❌Hapus");
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -102,6 +99,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
         btnHapus = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -240,6 +238,9 @@ public class FrameStokBarang extends javax.swing.JFrame {
         btnHapus.setText("❌Hapus");
         btnHapus.addActionListener(this::btnHapusActionPerformed);
 
+        jButton4.setText("Logout");
+        jButton4.addActionListener(this::jButton4ActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -286,6 +287,10 @@ public class FrameStokBarang extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(110, 110, 110))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,15 +325,17 @@ public class FrameStokBarang extends javax.swing.JFrame {
                         .addComponent(jLabel8)
                         .addGap(17, 17, 17)
                         .addComponent(jLabel7)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(33, 33, 33))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(31, 31, 31)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4)
+                .addComponent(jButton4)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -377,7 +384,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.executeUpdate();
             JOptionPane.showMessageDialog(this, pesan);
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         tampilData();
@@ -391,10 +398,10 @@ public class FrameStokBarang extends javax.swing.JFrame {
             int baris = tblBarang.getSelectedRow();
             Connection conn = Koneksi.getKoneksi();
             String sql = "UPDATE Barang SET "
-            + "nama = '" + txtNama.getText()+"', "
-            + "harga = '" +  txtHarga.getText()+"', "
-            + "stok = '" + txtStok.getText()+"' "
-            + "WHERE id = '"+ tblBarang.getValueAt(baris, 0) +"' ";
+                    + "nama = '" + txtNama.getText() + "', "
+                    + "harga = '" + txtHarga.getText() + "', "
+                    + "stok = '" + txtStok.getText() + "' "
+                    + "WHERE id = '" + tblBarang.getValueAt(baris, 0) + "' ";
 
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.executeUpdate();
@@ -403,8 +410,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(null, "Data diedit");
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_btnEditActionPerformed
@@ -425,8 +431,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data ditambahkan");
             tampilData();
             kosong();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_btnTambahActionPerformed
@@ -452,6 +457,12 @@ public class FrameStokBarang extends javax.swing.JFrame {
             btnHapus.setText("❌Hapus");
         }
     }//GEN-LAST:event_tblBarangMouseClicked
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -483,6 +494,7 @@ public class FrameStokBarang extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnTambah;
+    private javax.swing.JButton jButton4;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
     private javax.swing.JInternalFrame jInternalFrame1;

@@ -15,6 +15,7 @@ import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import database.Koneksi;
+import database.Login;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -194,6 +195,18 @@ public class contoh extends javax.swing.JFrame {
     titlePanel.add(title);
 
     headerPanel.add(titlePanel, BorderLayout.WEST);
+    // Panel kanan atas (Login / Logout)
+JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+userPanel.setOpaque(false);
+
+jButton5.setText("🚪 Logout");
+jButton5.setPreferredSize(new Dimension(100, 38));
+
+styleRoundButton(jButton5, Color.WHITE, BLUE_MID);
+
+userPanel.add(jButton5);
+
+headerPanel.add(userPanel, BorderLayout.EAST);
 
     // CARD STATISTIK
     JPanel cardPanel = new JPanel(new GridLayout(1, 3, 14, 0));
@@ -435,6 +448,7 @@ public class contoh extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(600, 827));
@@ -554,7 +568,7 @@ public class contoh extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel4);
-        jPanel4.setBounds(19, 238, 318, 73);
+        jPanel4.setBounds(19, 238, 333, 75);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -644,7 +658,7 @@ public class contoh extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel5);
-        jPanel5.setBounds(669, 238, 332, 73);
+        jPanel5.setBounds(669, 238, 346, 73);
 
         jPanel6.setBackground(new java.awt.Color(0, 120, 215));
 
@@ -671,7 +685,16 @@ public class contoh extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel6);
-        jPanel6.setBounds(19, 45, 1185, 130);
+        jPanel6.setBounds(19, 45, 1185, 124);
+
+        jButton5.setText("Logout");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton5);
+        jButton5.setBounds(10, 10, 72, 23);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -850,6 +873,12 @@ public class contoh extends javax.swing.JFrame {
         exportTXT();
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
      private void exportTXT() {
         if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Tidak ada data untuk diexport!");
@@ -945,6 +974,7 @@ public class contoh extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
